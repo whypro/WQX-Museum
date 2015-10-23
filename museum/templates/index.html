@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+{% block title %}主页{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>热门作品 <small><a>[更多]</a></small></h3>
+                    </div>
+                </div>
+
+                {% for masterpiece in masterpieces %}
+                <div class="col-md-3 col-sm-3 col-xs-6">
+                    <div class="thumbnail">
+                        <img alt="{{ masterpiece.title }}" src="{{ url_for('static', filename='masterpieces/'+masterpiece.title+'/'+masterpiece.screenshots[0]|d('../../default.bmp')) }}" />
+                        <div class="caption text-center">
+                            <h4>{{ masterpiece.title }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
+                            <p>{{ masterpiece.summary|d('') }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+{% endblock %}
