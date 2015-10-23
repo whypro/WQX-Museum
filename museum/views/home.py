@@ -31,6 +31,12 @@ def show_masterpiece_detail(oid):
     # mongo.db.update({'_id': ObjectId(oid)}, {'$push': {'statistic'}})
     return render_template('masterpiece_detail.html', masterpiece=masterpiece)
 
-@home.route('/about-us/')
-def show_about_us():
-    return render_template('about_us.html')
+
+@home.route('/about-me/')
+def show_about_me():
+    return render_template('about_me.html')
+
+
+@home.route('/recovery/')
+def show_recovery():
+    return render_template('recovery.html')

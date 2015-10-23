@@ -14,10 +14,9 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="museum-menu">
                         <ul class="nav navbar-nav">
-                            <li class="active"><a href="{{ url_for('home.index') }}">首页 <span class="sr-only">(current)</span></a></li>
-                            <li><a href="#">旧机回收</a></li>
-                            <li><a href="{{ url_for('home.show_about_us') }}">关于我们</a></li>
-                            <li><a href="{{ url_for('home.show_about_us') }}">捐助</a></li>
+                            <li><a href="{{ url_for('home.index') }}">首页 <span class="sr-only">(current)</span></a></li>
+                            <li><a href="{{ url_for('home.show_recovery') }}">旧机回收</a></li>
+                            <li><a href="{{ url_for('home.show_about_me') }}">关于我</a></li>
                             {#
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
