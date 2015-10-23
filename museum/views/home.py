@@ -27,4 +27,10 @@ def show_masterpiece_detail(oid):
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
     if not masterpiece:
         abort(404)
+    # 统计
+    # mongo.db.update({'_id': ObjectId(oid)}, {'$push': {'statistic'}})
     return render_template('masterpiece_detail.html', masterpiece=masterpiece)
+
+@home.route('/about-us/')
+def show_about_us():
+    return render_template('about_us.html')

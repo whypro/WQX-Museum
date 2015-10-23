@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h3>{{ masterpiece.title }}</h3>
+                        <h3>{{ masterpiece.title }}&emsp;<small>{{ masterpiece.subtitle }}</small></h3>
                     </div>
                 </div>
 
@@ -29,5 +29,41 @@
                     </div>
                 </div>
                 {% endfor %}
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    {% if 'author' in masterpiece %}
+                    <h4>作者信息</h4>
+                    <div class="row">
+                        {% set zh_key_map = dict(name='作者', realname='姓名', qq='QQ', email='电子邮箱') %}
+                        <ul>
+                            {% for key, value in masterpiece.author.items() %}
+                            <li>{{ zh_key_map[key] }}：{{ value }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if 'screenshots' in masterpiece and masterpiece.screenshots %}
+                    <h4>屏幕截图</h4>
+                    <div class="row">
+                        {% for screenshot in masterpiece.screenshots %}
+                        <div class="col-xs-6 col-md-2">
+                            <img src="{{ url_for('static', filename='masterpieces/'+masterpiece.title+'/'+screenshot) }}" alt="{{ masterpiece.title }}" class="img-responsive">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if 'files' in masterpiece and masterpiece.files %}
+                    <h4>文件下载</h4>
+                    <div class="row">
+                        <ul>
+                            {% for file in masterpiece.files %}
+                            <li><a href="{{ url_for('static', filename='masterpieces/'+masterpiece.title+'/'+masterpiece.files[0]) }}">{{ masterpiece.files[0] }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
 {% endblock %}
