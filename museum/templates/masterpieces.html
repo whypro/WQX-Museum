@@ -1,0 +1,33 @@
+{% extends '_base.html' %}
+{% block title %}主页{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>热门作品 <small><a>[更多]</a></small></h3>
+                    </div>
+                </div>
+
+                {% for masterpiece in masterpieces %}
+                <div class="col-md-3 col-sm-3 col-xs-6">
+                    <div class="thumbnail">
+                        <a href="{{ url_for('home.show_masterpiece_detail', oid=masterpiece._id) }}"><img alt="{{ masterpiece.title }}" src="{{ url_for('static', filename='masterpieces/'+masterpiece.title+'/'+masterpiece.screenshots[0]|d('../../default.bmp')) }}" /></a>
+                        <div class="caption">
+                            <h4 class="text-center">{{ masterpiece.title }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
+                            <p>
+                                <small>作者：{{ masterpiece.author.name if 'author' in masterpiece and 'name' in masterpiece.author else 'Unkown' }}</small>&emsp;
+                                {#
+                                <small><a href="{{ url_for('static', filename='masterpieces/'+masterpiece.title+'/'+masterpiece.files[0]) }}">{{ masterpiece.files[0] }}</a></small>&emsp;
+                                #}
+                                <br />
+                                <small>评分：{{ masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking else 'N/A' }}</small>&emsp;
+                                <small>认证：{{ masterpiece.certification if 'certification' in masterpiece else 'N/A' }}</small>
+                            </p>
+
+                            <p>{{ masterpiece.summary|d('') }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+{% endblock %}
