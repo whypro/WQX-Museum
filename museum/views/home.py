@@ -17,12 +17,17 @@ def index():
     return redirect(url_for('home.show_masterpieces'))
 
 
+def _load_masterpieces(find_condition, sort):
+    masterpieces = mongo.db.masterpieces.find(find_condition, sort=sort)
+    return masterpieces
+
+
 @home.route('/masterpiece/')
 def show_masterpieces():
-    find_condition = dict()
-    all_tags = mongo.db.masterpieces.distinct('tags')
     # 标签过滤
+    find_condition = dict()
     current_tags = []
+    all_tags = mongo.db.masterpieces.distinct('tags')
     tags = request.args.get('tags')
     if tags:
         current_tags += tags.split(',')
@@ -34,12 +39,18 @@ def show_masterpieces():
                 abort(400)
         find_condition['tags'] = {'$all': current_tags}
 
-    
-
-    masterpieces = mongo.db.masterpieces.find(find_condition).sort([('_id', -1)])
+    masterpieces = _load_masterpieces(find_condition, [('_id', -1)])
     # print masterpieces.count()
 
     return render_template('masterpieces.html', masterpieces=masterpieces, all_tags=all_tags, current_tags=current_tags)
+
+
+@home.route('/masterpiece/search/<key>/')
+def search_masterpieces(key):
+    find_condition = {'title': {'$regex': key}}
+    sort = [('title', 1), ('_id', -1)]
+    masterpieces = _load_masterpieces(find_condition, sort)
+    return render_template('masterpieces.html', masterpieces=masterpieces)
 
 
 @home.route('/masterpiece/<oid>/')

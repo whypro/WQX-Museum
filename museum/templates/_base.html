@@ -12,10 +12,18 @@
         <title>文曲星博物馆 | {% block title %}{% endblock %}</title>
 
         <!-- 新 Bootstrap 核心 CSS 文件 -->
+        {#
         <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/themes/google-plus/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/themes/google-plus/style.css') }}">
+        #}
 
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
+
+        {#
         <!-- 可选的Bootstrap主题文件（一般不用引入） -->
         <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+        #}
 
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -36,10 +44,20 @@
         </div>
 
         <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+        {#
         <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+        #}
+        <script src="{{ url_for('static', filename='jquery/jquery-1.11.3.min.js') }}"></script>
 
         <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+        <script src="{{ url_for('static', filename='bootstrap/bootstrap.min.js') }}"></script>
+        {#
+        <script src="{{ url_for('static', filename='bootstrap/themes/google-plus/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bootstrap/themes/google-plus/scripts.js') }}"></script>
         <script src="https://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        #}
+
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     </body>
 </html>

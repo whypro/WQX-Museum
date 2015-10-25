@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from flask import request
+
+
+def get_client_ip():
+    # 获取 ip 地址
+    if 'x-forwarded-for' in request.headers:
+        ip = request.headers['x-forwarded-for'].split(', ')[0]
+    else:
+        ip = request.remote_addr
+    return ip
+
+def get_user_agent():
+    return request.headers.get('user-agent')

@@ -51,7 +51,7 @@
                     <div class="row">
                         {% for screenshot in masterpiece.screenshots %}
                         <div class="col-xs-6 col-md-2">
-                            <img src="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+screenshot) }}" alt="{{ masterpiece.title }}" class="img-responsive">
+                            <a href="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+screenshot) }}"><img src="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+screenshot) }}" alt="{{ masterpiece.title }}" class="img-responsive" /></a>
                         </div>
                         {% endfor %}
                     </div>
@@ -61,7 +61,7 @@
                     <div class="row">
                         <ul>
                             {% for file in masterpiece.files %}
-                            <li><a href="{{ url_for('home.download', oid=masterpiece._id, filename=file) }}">{{ masterpiece.files[0] }}</a></li>
+                            <li><a href="{{ url_for('home.download', oid=masterpiece._id, filename=file) }}">{{ file }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
