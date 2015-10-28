@@ -34,7 +34,7 @@ if __name__ == '__main__':
         fn = filename.decode('GB18030')
         if ext == '.yml':
             metadata = fn
-        elif ext in ['.bmp', '.jpg', '.png']:
+        elif ext in ['.bmp', '.jpg', '.png', '.gif']:
             screenshots.append(fn)
         elif ext in ['.py', '.json']:
             # 忽略
