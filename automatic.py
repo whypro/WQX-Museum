@@ -27,13 +27,13 @@ if __name__ == '__main__':
 
     files = []
     screenshots = []
-    metadata = ''
+    metadata = []
 
     for filename in os.listdir('.'):
         ext = os.path.splitext(filename)[-1]
         fn = filename.decode('GB18030')
         if ext == '.yml':
-            metadata = fn
+            metadata.append(fn)
         elif ext in ['.bmp', '.jpg', '.png', '.gif']:
             screenshots.append(fn)
         elif ext in ['.py', '.json']:
@@ -45,15 +45,15 @@ if __name__ == '__main__':
     # print screenshots
     # print metadata.encode('utf-8')
 
-    if metadata:
-        with open(metadata, 'r') as f:
+    for md in metadata:
+        with open(md, 'r') as f:
             data = ordered_load(f.read().decode('utf-8'))
             # data = yaml.load(f.read().decode('utf-8'))
             data.setdefault('screenshots', screenshots)
             data.setdefault('files', files)
         # print data
 
-        with open(os.path.splitext(metadata)[0]+'.json', 'w') as f:
+        with open(os.path.splitext(md)[0]+'.json', 'w') as f:
             # print data
             json_str = json.dumps(data, ensure_ascii=False, encoding='utf-8', indent=2)
             f.write(json_str.encode('utf-8'))
@@ -68,4 +68,4 @@ if __name__ == '__main__':
         db['masterpieces'].update(find_condition, data, upsert=True)
         client.close()
 
-        os.remove('automatic.py')
+    os.remove('automatic.py')

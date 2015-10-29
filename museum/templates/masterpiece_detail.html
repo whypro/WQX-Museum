@@ -36,6 +36,7 @@
                             </li>
                             <li>认证：{{ masterpiece.dynamic_cert|d('N/A') }}</li>
                             <li>兼容性：{{ ' '.join(masterpiece.compatibility) if 'compatibility' in masterpiece else 'N/A' }}</li>
+                            <li>标签：{{ ' '.join(masterpiece.tags) if 'tags' in masterpiece else 'N/A' }}</li>
                         </ul>
                     </div>
 
