@@ -19,7 +19,16 @@ def index():
 
 def _load_masterpieces(find_condition, sort):
     masterpieces = mongo.db.masterpieces.find(find_condition, sort=sort)
-    return masterpieces
+
+    masterpieces_list = []
+    for masterpiece in masterpieces:
+        if 'author_oid' in masterpiece:
+            author = mongo.db.authors.find_one({'_id': masterpiece['author_oid']})
+            if author:
+                masterpiece['author'] = author
+        masterpieces_list.append(masterpiece)
+
+    return masterpieces_list
 
 
 @home.route('/masterpiece/')
@@ -67,6 +76,63 @@ def show_masterpiece_detail(oid):
         upsert=True
     )
     return render_template('masterpiece_detail.html', masterpiece=masterpiece)
+
+
+@home.route('/masterpiece/add/', methods=['GET', 'POST'])
+def add_masterpiece():
+    if request.method == 'POST':
+        data = dict(
+            title=request.form.get('title'),
+            subtitle=request.form.get('subtitle'),
+            version=request.form.get('version'),
+            date=request.form.get('date'),
+            author_oid=ObjectId(request.form.get('author-oid')) if request.form.get('author-oid') != 'None' else None,
+            studio_oid=ObjectId(request.form.get('studio-oid')) if request.form.get('studio-oid') != 'None' else None,
+            marking=dict(score=request.form.get('score')),
+            type=request.form.get('type'),
+            static_cert=request.form.get('static-cert'),
+            dynamic_cert=request.form.get('dynamic-cert'),
+            tags=request.form.getlist('tags'),
+        )
+        print data
+
+        result = mongo.db.masterpieces.insert_one(data)
+        return redirect(url_for('home.show_masterpiece_detail', oid=result.inserted_id))
+
+    authors = mongo.db.authors.find()
+    studios = mongo.db.studios.find()
+    tags = mongo.db.masterpieces.distinct('tags')
+    types = mongo.db.masterpieces.distinct('type')
+    return render_template('masterpiece_add.html', authors=authors, studios=studios, tags=tags, types=types)
+
+
+@home.route('/masterpiece/<oid>/edit/', methods=['GET', 'POST'])
+def edit_masterpiece_detail(oid):
+    if request.method == 'POST':
+        data = dict(
+            # title=request.form.get('title'),
+            subtitle=request.form.get('subtitle'),
+            version=request.form.get('version'),
+            date=request.form.get('date'),
+            author_oid=ObjectId(request.form.get('author-oid')) if request.form.get('author-oid') != 'None' else None,
+            studio_oid=ObjectId(request.form.get('studio-oid')) if request.form.get('studio-oid') != 'None' else None,
+            marking=request.form.get('marking'),
+            type_=request.form.get('type'),
+            static_cert=request.form.get('static-cert'),
+            dynamic_cert=request.form.get('dynamic-cert'),
+            tags=request.form.getlist('tags'),
+        )
+        print data
+
+        # masterpiece = mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})
+        return redirect(url_for('home.show_masterpiece_detail', oid=oid))
+
+    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    authors = mongo.db.authors.find()
+    studios = mongo.db.studios.find()
+    tags = mongo.db.masterpieces.distinct('tags')
+    types = mongo.db.masterpieces.distinct('type')
+    return render_template('masterpiece_edit.html', masterpiece=masterpiece, authors=authors, studios=studios, tags=tags, types=types)
 
 
 @home.route('/about-me/')

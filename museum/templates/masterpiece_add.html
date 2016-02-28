@@ -1,0 +1,152 @@
+{% extends '_base.html' %}
+{% block title %}创建{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>{{ 1 }}&emsp;<small>{{ 2 }}</small></h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <form class="form-horizontal" method="post" action="{{ url_for('home.add_masterpiece') }}">
+
+                        <div class="form-group">
+                            <label for="title-input" class="col-sm-2 control-label">标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" class="form-control" id="title-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subtitle-input" class="col-sm-2 control-label">副标题</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="subtitle" class="form-control" id="subtitle-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="version-input" class="col-sm-2 control-label">版本号</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="version" class="form-control" id="version-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date-input" class="col-sm-2 control-label">发布日期</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="date" class="form-control" id="date-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="author-id-select" class="col-sm-2 control-label">作者</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="author-oid" id="author-id-select">
+                                    <option value="None">请选择作者</option>
+                                    {% for author in authors %}
+                                    <option value="{{ author._id }}">{{ author.name|d('无') }} , {{ author.email|d('无') }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="studio-id-select" class="col-sm-2 control-label">工作室</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="studio-oid" id="studio-id-select">
+                                    <option value="None">请选择工作室</option>
+                                    {% for studio in studios %}
+                                    <option value="{{ studio._id }}">{{ studio.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">类型</label>
+                            <div class="col-sm-10">
+                                {% for type_ in types %}
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="type" id="type-{{ loop.index }}" value="{{ type_ }}"> {{ type_ }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">评分</label>
+                            <div class="col-sm-10">
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-5" value="5"> 5
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-4" value="4"> 4
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-3" value="3"> 3
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-2" value="2"> 2
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-1" value="1"> 1
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="radio" name="score" id="score-0" value="None" checked> 以后再说
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="static-cert-input" class="col-sm-2 control-label">静态认证</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="static-cert" id="static-cert-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dynamic-cert-input" class="col-sm-2 control-label">动态认证</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="dynamic-cert" id="dynamic-cert-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">标签</label>
+                            <div class="col-sm-10">
+                                {% for tag in tags %}
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="tags" id="tag-{{ loop.index }}" value="{{ tag }}">{{ tag }}
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-success">保存</button>&emsp;
+                                <a class="btn btn-default" href="{{ url_for('home.index') }}">取消</a>
+                            </div>
+                        </div>
+
+                        {#
+                        <div class="form-group">
+                            <label for="tags-select" class="col-sm-2 control-label">标签</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="tags-select" multiple>
+                                    <option>请选择标签</option>
+                                    {% for tag in tags %}
+                                    <option value="{{ tag }}">{{ tag }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        #}
+
+
+                    </form>
+                </div>
+            </div>
+{% endblock %}

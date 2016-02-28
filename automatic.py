@@ -30,7 +30,7 @@ if __name__ == '__main__':
     metadata = []
 
     for filename in os.listdir('.'):
-        ext = os.path.splitext(filename)[-1]
+        ext = os.path.splitext(filename)[-1].lower()
         fn = filename.decode('GB18030')
         if ext == '.yml':
             metadata.append(fn)

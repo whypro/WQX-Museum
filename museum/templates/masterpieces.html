@@ -34,7 +34,7 @@
                             <img alt="{{ masterpiece.title }}" src="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+masterpiece.screenshots[0]|d('../../../default.bmp')) }}" class="img-responsive" style="height: 80px; display: block;"/>
                         </a>
                         <div class="caption">
-                            <h4 class="text-center">{{ masterpiece.title }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
+                            <h4 class="text-center">{{ masterpiece.title|truncate(14, True) }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
                             <p>
                                 <small>作者：{{ masterpiece.author.name|truncate(7, True) if 'author' in masterpiece and 'name' in masterpiece.author else 'Unkown' }}</small>&emsp;
                                 {% set score = masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking else None %}
