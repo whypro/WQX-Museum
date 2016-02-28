@@ -17,7 +17,9 @@
                         {% set zh_key_map = dict(name='作者', realname='姓名', qq='QQ', email='电子邮箱', site='网站') %}
                         <ul>
                             {% for key, value in masterpiece.author.items() %}
+                            {% if key in zh_key_map %}
                             <li>{{ zh_key_map[key] }}：{{ value }}</li>
+                            {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
@@ -35,8 +37,8 @@
                             {% endif -%}
                             </li>
                             <li>认证：{{ masterpiece.dynamic_cert|d('N/A') }}</li>
-                            <li>兼容性：{{ ' '.join(masterpiece.compatibility) if 'compatibility' in masterpiece else 'N/A' }}</li>
-                            <li>标签：{{ ' '.join(masterpiece.tags) if 'tags' in masterpiece else 'N/A' }}</li>
+                            <li>兼容性：{{ masterpiece.compatibility|join(' ') if 'compatibility' in masterpiece else 'N/A' }}</li>
+                            <li>标签：{{ masterpiece.tags|join(' ') if 'tags' in masterpiece and masterpiece.tags else 'N/A' }}</li>
                         </ul>
                     </div>
 
@@ -72,10 +74,13 @@
             <div class="row">
                     <hr />
                     <div class="col-md-2">
-                        <a class="btn btn-default" href="{{ url_for('home.edit_masterpiece_detail', oid=masterpiece._id) }}">修改</a>
+                        <a class="btn btn-success" href="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">修改</a>
                     </div>
                     <div class="col-md-2">
-                        <a class="btn btn-default" href="">更新截图和文件</a>
+                        <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}">删除</a>
                     </div>
                 </div>
             </div>

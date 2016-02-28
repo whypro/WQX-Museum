@@ -31,7 +31,7 @@
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
                         <a href="{{ url_for('home.show_masterpiece_detail', oid=masterpiece._id) }}">
-                            <img alt="{{ masterpiece.title }}" src="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+masterpiece.screenshots[0]|d('../../../default.bmp')) }}" class="img-responsive" style="height: 80px; display: block;"/>
+                            <img alt="{{ masterpiece.title }}" src="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+masterpiece.image) }}" class="img-responsive" style="height: 80px; display: block;"/>
                         </a>
                         <div class="caption">
                             <h4 class="text-center">{{ masterpiece.title|truncate(14, True) }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
@@ -53,7 +53,7 @@
                                 <small>认证：{{ masterpiece.dynamic_cert if 'dynamic_cert' in masterpiece else 'N/A' }}</small>
                                 {% endif %}
                                 <br />
-                                <small>兼容性：{{ ' '.join(masterpiece.compatibility[:2])+' ...' if 'compatibility' in masterpiece else 'N/A' }}</small>
+                                <small>兼容性：{{ masterpiece.compatibility[:2]|join(' ')+' ...' if 'compatibility' in masterpiece else 'N/A' }}</small>
                             </p>
 
                             <p>{{ masterpiece.summary|d('') }}</p>

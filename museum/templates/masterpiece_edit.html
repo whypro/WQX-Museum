@@ -11,7 +11,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <form class="form-horizontal" method="post" action="{{ url_for('home.edit_masterpiece_detail', oid=masterpiece._id) }}">
+                    <form class="form-horizontal" method="post" action="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">
 
                         <div class="form-group">
                             <label class="col-sm-2 control-label">标题</label>
@@ -45,7 +45,7 @@
                             <label for="author-id-select" class="col-sm-2 control-label">作者</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="author-oid" id="author-id-select">
-                                    <option value="-1">请选择作者</option>
+                                    <option value="None">请选择作者</option>
                                     {% for author in authors %}
                                     <option value="{{ author._id }}"{% if masterpiece.author_oid == author._id %} selected="selected"{% endif %}>{{ author.name|d('无') }} , {{ author.email|d('无') }}</option>
                                     {% endfor %}
@@ -57,7 +57,7 @@
                             <label for="studio-id-select" class="col-sm-2 control-label">工作室</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="studio-oid" id="studio-id-select">
-                                    <option value="-1">请选择工作室</option>
+                                    <option value="None">请选择工作室</option>
                                     {% for studio in studios %}
                                     <option value="{{ studio._id }}"{% if masterpiece.studio_oid == studio._id %} selected="selected"{% endif %}>{{ studio.name }}</option>
                                     {% endfor %}
@@ -68,7 +68,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">作者</label>
                             <div class="col-sm-10">
-                                <p class="form-control-static">{{ ', '.join(masterpiece.author.values()) }}</p>
+                                <p class="form-control-static">{{ masterpiece.author|d('') }}</p>
                             </div>
                         </div>
 
@@ -102,7 +102,7 @@
                                     <input type="radio" name="score" id="score-1" value="1"{% if 'marking' in masterpiece and 'score' in masterpiece.marking and masterpiece.marking.score == 1 %} checked="checked"{% endif %}> 1
                                 </label>
                                 <label class="checkbox-inline">
-                                    <input type="radio" name="score" id="score-0" value="-1"> 取消
+                                    <input type="radio" name="score" id="score-0" value="None"> 取消
                                 </label>
                             </div>
                         </div>

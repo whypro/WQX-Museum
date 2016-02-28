@@ -22,13 +22,18 @@ def _load_masterpieces(find_condition, sort):
 
     masterpieces_list = []
     for masterpiece in masterpieces:
-        if 'author_oid' in masterpiece:
-            author = mongo.db.authors.find_one({'_id': masterpiece['author_oid']})
-            if author:
-                masterpiece['author'] = author
-        masterpieces_list.append(masterpiece)
+        masterpieces_list.append(_new_masterpiece(masterpiece))
 
     return masterpieces_list
+
+
+def _new_masterpiece(masterpiece):
+    if 'author_oid' in masterpiece:
+        author = mongo.db.authors.find_one({'_id': masterpiece['author_oid']})
+        if author:
+            masterpiece['author'] = author
+    masterpiece['image'] = masterpiece['screenshots'][0] if 'screenshots' in masterpiece and len(masterpiece['screenshots']) else '../../../default.bmp'
+    return masterpiece
 
 
 @home.route('/masterpiece/')
@@ -62,6 +67,32 @@ def search_masterpieces(key):
     return render_template('masterpieces.html', masterpieces=masterpieces)
 
 
+@home.route('/masterpiece/<oid>/update/')
+def update_masterpieces_screenshots_and_files(oid):
+    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    if not masterpiece:
+        abort(404)
+
+    dirname = os.path.abspath(os.path.join('museum\\static', 'masterpieces', masterpiece['type'], masterpiece['title']))
+    screenshots = []
+    files = []
+
+    for filename in os.listdir(dirname):
+        ext = os.path.splitext(filename)[-1].lower()
+        if ext in ['.bmp', '.jpg', '.png', '.gif']:
+            screenshots.append(filename)
+        elif ext in ['.py', '.json', '.yml']:
+            # 忽略
+            continue
+        else:
+            files.append(filename)
+    print dirname
+    print screenshots
+    print files
+    mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': {'screenshots': screenshots, 'files': files}})
+    return redirect(url_for('home.show_masterpiece_detail', oid=oid))
+
+
 @home.route('/masterpiece/<oid>/')
 def show_masterpiece_detail(oid):
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
@@ -75,12 +106,15 @@ def show_masterpiece_detail(oid):
         {'$addToSet': {'user_agent': user_agent}, '$inc': {'count': 1}}, 
         upsert=True
     )
-    return render_template('masterpiece_detail.html', masterpiece=masterpiece)
+    return render_template('masterpiece_detail.html', masterpiece=_new_masterpiece(masterpiece))
 
 
 @home.route('/masterpiece/add/', methods=['GET', 'POST'])
 def add_masterpiece():
     if request.method == 'POST':
+        print request.form.get('type')
+        if not request.form.get('title') or not request.form.get('type') or request.form.get('type') == 'None':
+            return redirect(url_for('home.add_masterpiece'))
         data = dict(
             title=request.form.get('title'),
             subtitle=request.form.get('subtitle'),
@@ -107,7 +141,7 @@ def add_masterpiece():
 
 
 @home.route('/masterpiece/<oid>/edit/', methods=['GET', 'POST'])
-def edit_masterpiece_detail(oid):
+def edit_masterpiece(oid):
     if request.method == 'POST':
         data = dict(
             # title=request.form.get('title'),
@@ -124,15 +158,23 @@ def edit_masterpiece_detail(oid):
         )
         print data
 
-        # masterpiece = mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})
+        mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})
         return redirect(url_for('home.show_masterpiece_detail', oid=oid))
 
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    if not masterpiece:
+        abort(404)
     authors = mongo.db.authors.find()
     studios = mongo.db.studios.find()
     tags = mongo.db.masterpieces.distinct('tags')
     types = mongo.db.masterpieces.distinct('type')
-    return render_template('masterpiece_edit.html', masterpiece=masterpiece, authors=authors, studios=studios, tags=tags, types=types)
+    return render_template('masterpiece_edit.html', masterpiece=_new_masterpiece(masterpiece), authors=authors, studios=studios, tags=tags, types=types)
+
+
+@home.route('/masterpiece/<oid>/delete/')
+def delete_masterpiece(oid):
+    mongo.db.masterpieces.delete_one({'_id': ObjectId(oid)})
+    return redirect(url_for('home.index'))
 
 
 @home.route('/about-me/')
