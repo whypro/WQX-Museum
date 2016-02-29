@@ -1,0 +1,33 @@
+{% extends '_base.html' %}
+{% block title %}所有作者{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>所有作者</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-hover">
+                        {% for author in authors %}
+                        <tr>
+                            <td>{{ author.name }}</td>
+                            <td>{{ author.obj.name|d('') }}</td>
+                            <td>
+                                {% if not author.obj %}
+                                <a class="btn btn-primary btn-xs" href="{{ url_for('home.add_author', offset=loop.index0) }}">添加</a>
+                                {% else %}
+                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author.obj._id, offset=loop.index0) }}">修改</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+{% endblock %}
+

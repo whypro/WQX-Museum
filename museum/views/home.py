@@ -73,11 +73,10 @@ def update_masterpieces_screenshots_and_files(oid):
     if not masterpiece:
         abort(404)
 
-    dirname = os.path.abspath(os.path.join('museum\\static', 'masterpieces', masterpiece['type'], masterpiece['title']))
     screenshots = []
     files = []
 
-    for filename in os.listdir(dirname):
+    for filename in os.listdir(_get_masterpiece_dirname(masterpiece)):
         ext = os.path.splitext(filename)[-1].lower()
         if ext in ['.bmp', '.jpg', '.png', '.gif']:
             screenshots.append(filename)
@@ -86,9 +85,10 @@ def update_masterpieces_screenshots_and_files(oid):
             continue
         else:
             files.append(filename)
-    print dirname
+
     print screenshots
     print files
+
     mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': {'screenshots': screenshots, 'files': files}})
     return redirect(url_for('home.show_masterpiece_detail', oid=oid))
 
@@ -112,25 +112,48 @@ def show_masterpiece_detail(oid):
 @home.route('/masterpiece/add/', methods=['GET', 'POST'])
 def add_masterpiece():
     if request.method == 'POST':
-        print request.form.get('type')
-        if not request.form.get('title') or not request.form.get('type') or request.form.get('type') == 'None':
+        title = request.form.get('title')
+        type_ = request.form.get('type')
+        if not title or not type_ or type_ == 'None':
             return redirect(url_for('home.add_masterpiece'))
-        data = dict(
-            title=request.form.get('title'),
-            subtitle=request.form.get('subtitle'),
-            version=request.form.get('version'),
-            date=request.form.get('date'),
-            author_oid=ObjectId(request.form.get('author-oid')) if request.form.get('author-oid') != 'None' else None,
-            studio_oid=ObjectId(request.form.get('studio-oid')) if request.form.get('studio-oid') != 'None' else None,
-            marking=dict(score=request.form.get('score')),
-            type=request.form.get('type'),
-            static_cert=request.form.get('static-cert'),
-            dynamic_cert=request.form.get('dynamic-cert'),
-            tags=request.form.getlist('tags'),
-        )
+        data = dict(title=title, type=type_)
+        subtitle = request.form.get('subtitle')
+        if subtitle:
+            data['subtitle'] = subtitle
+        version = request.form.get('version')
+        if version:
+            data['version'] = version
+        date = request.form.get('date')
+        if date:
+            data['date'] = date
+        author_oid = request.form.get('author-oid')
+        if author_oid and author_oid != 'None':
+            data['author_oid'] = ObjectId(author_oid)
+        studio_oid = request.form.get('studio-oid')
+        if studio_oid and studio_oid != 'None':
+            data['studio_oid'] = ObjectId(studio_oid)
+        score = request.form.get('score')
+        if score and score != 'None':
+            if not score.isdigit():
+                abort(400)
+            data.setdefault('marking', dict())
+            data['marking']['score'] = score
+        static_cert = request.form.get('static-cert')
+        if static_cert:
+            data['static_cert'] = static_cert
+        dynamic_cert = request.form.get('dynamic-cert')
+        if dynamic_cert:
+            data['dynamic_cert'] = dynamic_cert
+        tags = request.form.getlist('tags')
+        if tags:
+            data['tags'] = tags
         print data
 
         result = mongo.db.masterpieces.insert_one(data)
+        print result.inserted_id
+        masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(result.inserted_id)})
+        os.makedirs(_get_masterpiece_dirname(masterpiece))
+
         return redirect(url_for('home.show_masterpiece_detail', oid=result.inserted_id))
 
     authors = mongo.db.authors.find()
@@ -143,19 +166,37 @@ def add_masterpiece():
 @home.route('/masterpiece/<oid>/edit/', methods=['GET', 'POST'])
 def edit_masterpiece(oid):
     if request.method == 'POST':
-        data = dict(
-            # title=request.form.get('title'),
-            subtitle=request.form.get('subtitle'),
-            version=request.form.get('version'),
-            date=request.form.get('date'),
-            author_oid=ObjectId(request.form.get('author-oid')) if request.form.get('author-oid') != 'None' else None,
-            studio_oid=ObjectId(request.form.get('studio-oid')) if request.form.get('studio-oid') != 'None' else None,
-            marking=request.form.get('marking'),
-            type_=request.form.get('type'),
-            static_cert=request.form.get('static-cert'),
-            dynamic_cert=request.form.get('dynamic-cert'),
-            tags=request.form.getlist('tags'),
-        )
+        data = dict()
+        subtitle = request.form.get('subtitle')
+        if subtitle:
+            data['subtitle'] = subtitle
+        version = request.form.get('version')
+        if version:
+            data['version'] = version
+        date = request.form.get('date')
+        if date:
+            data['date'] = date
+        author_oid = request.form.get('author-oid')
+        if author_oid and author_oid != 'None':
+            data['author_oid'] = ObjectId(author_oid)
+        studio_oid = request.form.get('studio-oid')
+        if studio_oid and studio_oid != 'None':
+            data['studio_oid'] = ObjectId(studio_oid)
+        score = request.form.get('score')
+        if score and score != 'None':
+            if not score.isdigit():
+                abort(400)
+            data.setdefault('marking', dict())
+            data['marking']['score'] = score
+        static_cert = request.form.get('static-cert')
+        if static_cert:
+            data['static_cert'] = static_cert
+        dynamic_cert = request.form.get('dynamic-cert')
+        if dynamic_cert:
+            data['dynamic_cert'] = dynamic_cert
+        tags = request.form.getlist('tags')
+        if tags:
+            data['tags'] = tags
         print data
 
         mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})
@@ -171,9 +212,14 @@ def edit_masterpiece(oid):
     return render_template('masterpiece_edit.html', masterpiece=_new_masterpiece(masterpiece), authors=authors, studios=studios, tags=tags, types=types)
 
 
+def _get_masterpiece_dirname(masterpiece):
+    return os.path.abspath(os.path.join('museum\\static', 'masterpieces', masterpiece['type'], masterpiece['title']))
+
+
 @home.route('/masterpiece/<oid>/delete/')
 def delete_masterpiece(oid):
-    mongo.db.masterpieces.delete_one({'_id': ObjectId(oid)})
+    masterpiece = mongo.db.masterpieces.find_one_and_delete({'_id': ObjectId(oid)})
+    os.removedirs(_get_masterpiece_dirname(masterpiece))
     return redirect(url_for('home.index'))
 
 
@@ -193,3 +239,89 @@ def download(oid, filename):
     if not masterpiece:
         abort(404)
     return redirect(url_for('static', filename='masterpieces/'+masterpiece['type']+'/'+masterpiece['title']+'/'+filename))
+
+
+@home.route('/author/')
+def show_authors():
+    authors = mongo.db.masterpieces.distinct('author')
+    authors_list = []
+    for author in authors:
+        if 'name' in author:
+            print author['name']
+            author['obj'] = mongo.db.authors.find_one({'name': author['name']})
+        else:
+            author['obj'] = None
+        authors_list.append(author)
+    return render_template('authors.html', authors=authors_list)
+
+
+@home.route('/author/add/', methods=['GET', 'POST'])
+def add_author():
+    if request.method == 'POST':
+        data = dict()
+        name = request.form.get('name')
+        if name:
+            data['name'] = name
+        email = request.form.get('email')
+        if email:
+            data['email'] = email
+        qq = request.form.get('qq')
+        if qq:
+            data['qq'] = qq
+        realname = request.form.get('realname')
+        if realname:
+            data['realname'] = realname
+
+        mongo.db.authors.insert_one(data)
+        return redirect(url_for('home.show_authors'))
+
+    offset = request.args.get('offset')
+    if offset:
+        if not offset.isdigit():
+            abort(400)
+        offset = int(offset)
+        authors = mongo.db.masterpieces.distinct('author')
+        old_author = authors[offset]
+    else:
+        old_author = dict()
+
+    return render_template('author_add.html', old_author=old_author)
+
+
+@home.route('/author/<oid>/edit/', methods=['GET', 'POST'])
+def edit_author(oid):
+    author = mongo.db.authors.find_one({'_id': ObjectId(oid)})
+    if not author:
+        abort(404)
+
+    if request.method == 'POST':
+        data = dict()
+        name = request.form.get('name')
+        if name:
+            data['name'] = name
+        email = request.form.get('email')
+        if email:
+            data['email'] = email
+        qq = request.form.get('qq')
+        if qq:
+            data['qq'] = qq
+        realname = request.form.get('realname')
+        if realname:
+            data['realname'] = realname
+
+        mongo.db.authors.update_one({'_id': ObjectId(oid)}, {'$set': data})
+        return redirect(url_for('home.show_authors'))
+
+    offset = request.args.get('offset')
+    if offset:
+        if not offset.isdigit():
+            abort(400)
+        offset = int(offset)
+        authors = mongo.db.masterpieces.distinct('author')
+        old_author = authors[offset]
+    else:
+        old_author = dict()
+
+    return render_template('author_edit.html', author=author, old_author=old_author)
+
+

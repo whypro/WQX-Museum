@@ -29,7 +29,7 @@
                     <div class="row">
                         <ul>
                             <li>版本：{{ masterpiece.version|d('N/A') }}</li>
-                            {% set score = masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking else None %}
+                            {% set score = masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking and masterpiece.marking.score else None %}
                             <li>评分：
                             {%- if score == None %}N/A{% else %}
                             {%- for i in range(score) %}★{% endfor -%}
@@ -80,7 +80,7 @@
                         <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>
                     </div>
                     <div class="col-md-2">
-                        <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}">删除</a>
+                        <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>
                     </div>
                 </div>
             </div>
