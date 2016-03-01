@@ -47,7 +47,7 @@
                                 <select class="form-control" name="author-oid" id="author-id-select">
                                     <option value="None">请选择作者</option>
                                     {% for author in authors %}
-                                    <option value="{{ author._id }}"{% if masterpiece.author_oid == author._id %} selected="selected"{% endif %}>{{ author.name|d('无') }} , {{ author.email|d('无') }}</option>
+                                    <option value="{{ author._id }}"{% if masterpiece.author_oid == author._id %} selected="selected"{% endif %}>{{ author.name|d('无') }} , {{ author.email|d('无') }}, {{ author.realname|d('无') }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -68,7 +68,11 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">作者</label>
                             <div class="col-sm-10">
-                                <p class="form-control-static">{{ masterpiece.author|d('') }}</p>
+                                <p class="form-control-static">
+                                    {% for k, v in masterpiece.author.items() %}
+                                    {{ k }}: {{ v }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
                             </div>
                         </div>
 

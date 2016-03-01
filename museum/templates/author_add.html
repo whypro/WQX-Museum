@@ -21,6 +21,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="other-names-input" class="col-sm-2 control-label">别名</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="other-names" class="form-control" id="other-names-input">
+{#                                <br>#}
+{#                                <input type="text" name="other-names" class="form-control" id="other-names-input-1">#}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="email-input" class="col-sm-2 control-label">邮箱</label>
                             <div class="col-sm-10">
                                 <input type="text" name="email" class="form-control" id="email-input">
@@ -42,9 +51,34 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="site-input" class="col-sm-2 control-label">网站</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="site" class="form-control" id="site-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address-input" class="col-sm-2 control-label">地址</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="address" class="form-control" id="address-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="zip-input" class="col-sm-2 control-label">邮编</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="zip" class="form-control" id="zip-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-2 control-label">作者</label>
                             <div class="col-sm-10">
-                                <p class="form-control-static">{{ old_author|d('') }}</p>
+                                <p class="form-control-static">
+                                    {% for k, v in old_author.items() %}
+                                    {{ k }}: {{ v }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
                             </div>
                         </div>
 

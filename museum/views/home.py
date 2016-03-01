@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 import datetime
 
 from flask import Blueprint, render_template, redirect, url_for, abort, request
+import pymongo
 
 from ..extensions import mongo
 from ..helpers import get_client_ip, get_user_agent
@@ -32,6 +33,10 @@ def _new_masterpiece(masterpiece):
         author = mongo.db.authors.find_one({'_id': masterpiece['author_oid']})
         if author:
             masterpiece['author'] = author
+        else:
+            mongo.db.masterpieces.update_one({'_id': masterpiece['_id']}, {'$unset': {'author_oid', True}})
+    if 'author' not in masterpiece:
+        masterpiece['author'] = dict()
     masterpiece['image'] = masterpiece['screenshots'][0] if 'screenshots' in masterpiece and len(masterpiece['screenshots']) else '../../../default.bmp'
     return masterpiece
 
@@ -205,7 +210,7 @@ def edit_masterpiece(oid):
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
     if not masterpiece:
         abort(404)
-    authors = mongo.db.authors.find()
+    authors = mongo.db.authors.find().sort([('name', pymongo.ASCENDING)])
     studios = mongo.db.studios.find()
     tags = mongo.db.masterpieces.distinct('tags')
     types = mongo.db.masterpieces.distinct('type')
@@ -243,16 +248,8 @@ def download(oid, filename):
 
 @home.route('/author/')
 def show_authors():
-    authors = mongo.db.masterpieces.distinct('author')
-    authors_list = []
-    for author in authors:
-        if 'name' in author:
-            print author['name']
-            author['obj'] = mongo.db.authors.find_one({'name': author['name']})
-        else:
-            author['obj'] = None
-        authors_list.append(author)
-    return render_template('authors.html', authors=authors_list)
+    authors = mongo.db.authors.find().sort([('name', pymongo.ASCENDING)])
+    return render_template('authors.html', authors=authors)
 
 
 @home.route('/author/add/', methods=['GET', 'POST'])
@@ -262,6 +259,9 @@ def add_author():
         name = request.form.get('name')
         if name:
             data['name'] = name
+        other_names = request.form.getlist('other-names')
+        if other_names:
+            data['other_names'] = filter(lambda x: x, other_names)
         email = request.form.get('email')
         if email:
             data['email'] = email
@@ -271,6 +271,16 @@ def add_author():
         realname = request.form.get('realname')
         if realname:
             data['realname'] = realname
+        site = request.form.get('site')
+        if site:
+            data['site'] = site
+        address = request.form.get('address')
+        if address:
+            data['address'] = address
+        zip_ = request.form.get('zip')
+        if zip_:
+            data['zip'] = zip_
+        print data
 
         mongo.db.authors.insert_one(data)
         return redirect(url_for('home.show_authors'))
@@ -299,6 +309,9 @@ def edit_author(oid):
         name = request.form.get('name')
         if name:
             data['name'] = name
+        other_names = request.form.getlist('other_names')
+        if other_names:
+            data['other_names'] = other_names
         email = request.form.get('email')
         if email:
             data['email'] = email
@@ -308,6 +321,15 @@ def edit_author(oid):
         realname = request.form.get('realname')
         if realname:
             data['realname'] = realname
+        site = request.form.get('site')
+        if site:
+            data['site'] = site
+        address = request.form.get('address')
+        if address:
+            data['address'] = address
+        zip_ = request.form.get('zip')
+        if zip_:
+            data['zip'] = zip_
 
         mongo.db.authors.update_one({'_id': ObjectId(oid)}, {'$set': data})
         return redirect(url_for('home.show_authors'))

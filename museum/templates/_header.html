@@ -15,6 +15,8 @@
                     <div class="collapse navbar-collapse" id="museum-menu">
                         <ul class="nav navbar-nav">
                             <li><a href="{{ url_for('home.index') }}">首页 <span class="sr-only">(current)</span></a></li>
+                            <li><a href="{{ url_for('home.show_masterpieces') }}">作品管理</a></li>
+                            <li><a href="{{ url_for('home.show_authors') }}">作者管理</a></li>
                             <li><a href="{{ url_for('home.show_recovery') }}">旧机回收</a></li>
                             <li><a href="{{ url_for('home.show_about_me') }}">关于我</a></li>
                             {#

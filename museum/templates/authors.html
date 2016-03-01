@@ -14,14 +14,19 @@
                     <table class="table table-hover">
                         {% for author in authors %}
                         <tr>
+                            <td>{{ loop.index }}</td>
                             <td>{{ author.name }}</td>
-                            <td>{{ author.obj.name|d('') }}</td>
+                            <td>{{ author.realname }}</td>
+                            <td>{{ author.email }}</td>
+                            <td>{{ author.qq }}</td>
+                            {# <td>{{ author.obj.name|d('') }} {{ author.obj.realname|d('') }}</td> #}
                             <td>
-                                {% if not author.obj %}
-                                <a class="btn btn-primary btn-xs" href="{{ url_for('home.add_author', offset=loop.index0) }}">添加</a>
-                                {% else %}
-                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author.obj._id, offset=loop.index0) }}">修改</a>
-                                {% endif %}
+{#                                {% if not author.obj %}#}
+{#                                <a class="btn btn-primary btn-xs" href="{{ url_for('home.add_author', offset=loop.index0) }}">添加</a>#}
+{#                                {% else %}#}
+{#                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author.obj._id, offset=loop.index0) }}">修改</a>#}
+{#                                {% endif %}#}
+                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author._id) }}">修改</a>
                             </td>
                         </tr>
                         {% endfor %}
