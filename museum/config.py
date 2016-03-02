@@ -14,4 +14,4 @@ class Config(object):
     MONGO_PORT = 27017
     MONGO_DBNAME = 'wqx_museum'
 
-    MASTERPIECES_DIR = 'E:\Codes\My Github\wqx-museum\masterpieces'
+    ASSETS_DIR = r'E:\Codes\My Github\WQX-Museum\assets'

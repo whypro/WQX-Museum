@@ -5,6 +5,7 @@ from bson.objectid import ObjectId
 import datetime
 
 from flask import Blueprint, render_template, redirect, url_for, abort, request
+from flask import current_app, send_from_directory, send_file
 import pymongo
 
 from ..extensions import mongo
@@ -37,7 +38,6 @@ def _new_masterpiece(masterpiece):
             mongo.db.masterpieces.update_one({'_id': masterpiece['_id']}, {'$unset': {'author_oid', True}})
     if 'author' not in masterpiece:
         masterpiece['author'] = dict()
-    masterpiece['image'] = masterpiece['screenshots'][0] if 'screenshots' in masterpiece and len(masterpiece['screenshots']) else '../../../default.bmp'
     return masterpiece
 
 
@@ -262,7 +262,41 @@ def download(oid, filename):
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
     if not masterpiece:
         abort(404)
-    return redirect(url_for('static', filename='masterpieces/'+masterpiece['type']+'/'+masterpiece['title']+'/'+filename))
+    path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
+    # print current_app.config['ASSETS_DIR'], path
+    return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path, as_attachment=True)
+
+
+@home.route('/masterpiece/<oid>/screenshot/<int:idx>/')
+def screenshot(oid, idx):
+    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    if not masterpiece:
+        abort(404)
+
+    if 'screenshots' in masterpiece and idx <= len(masterpiece['screenshots']):
+        filename = masterpiece['screenshots'][idx]
+    else:
+        abort(404)
+
+    path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
+    return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path)
+
+
+@home.route('/masterpiece/<oid>/preview/')
+def preview(oid):
+    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    if not masterpiece:
+        abort(404)
+
+    if 'screenshots' in masterpiece and masterpiece['screenshots']:
+        filename = masterpiece['screenshots'][0]
+        path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
+        return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    else:
+        path = os.path.join(current_app.static_folder, 'default.bmp')
+        return send_file(path)
 
 
 @home.route('/author/')
