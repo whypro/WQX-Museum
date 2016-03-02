@@ -149,9 +149,15 @@ def add_masterpiece():
         dynamic_cert = request.form.get('dynamic-cert')
         if dynamic_cert:
             data['dynamic_cert'] = dynamic_cert
+        compatibility = request.form.getlist('compatibility')
+        if compatibility:
+            data['compatibility'] = filter(lambda x: x, compatibility)
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
+        ref = request.form.get('ref')
+        if ref:
+            data['ref'] = ref
         print data
 
         result = mongo.db.masterpieces.insert_one(data)
@@ -161,11 +167,18 @@ def add_masterpiece():
 
         return redirect(url_for('home.show_masterpiece_detail', oid=result.inserted_id))
 
-    authors = mongo.db.authors.find()
+    copy_oid = request.args.get('copy')
+    if copy_oid:
+        copy_masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(copy_oid)})
+        if not copy_masterpiece:
+            abort(400)
+    else:
+        copy_masterpiece = dict()
+    authors = mongo.db.authors.find().sort([('name', pymongo.ASCENDING)])
     studios = mongo.db.studios.find()
     tags = mongo.db.masterpieces.distinct('tags')
     types = mongo.db.masterpieces.distinct('type')
-    return render_template('masterpiece_add.html', authors=authors, studios=studios, tags=tags, types=types)
+    return render_template('masterpiece_add.html', masterpiece=_new_masterpiece(copy_masterpiece), authors=authors, studios=studios, tags=tags, types=types)
 
 
 @home.route('/masterpiece/<oid>/edit/', methods=['GET', 'POST'])
@@ -199,9 +212,15 @@ def edit_masterpiece(oid):
         dynamic_cert = request.form.get('dynamic-cert')
         if dynamic_cert:
             data['dynamic_cert'] = dynamic_cert
+        compatibility = request.form.getlist('compatibility')
+        if compatibility:
+            data['compatibility'] = filter(lambda x: x, compatibility)
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
+        ref = request.form.get('ref')
+        if ref:
+            data['ref'] = ref
         print data
 
         mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})

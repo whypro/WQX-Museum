@@ -29,6 +29,7 @@
                     <div class="row">
                         <ul>
                             <li>版本：{{ masterpiece.version|d('N/A') }}</li>
+                            <li>发布日期：{{ masterpiece.date|d('N/A') }}</li>
                             {% set score = masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking and masterpiece.marking.score else None %}
                             <li>评分：
                             {%- if score == None %}N/A{% else %}
@@ -39,6 +40,7 @@
                             <li>认证：{{ masterpiece.dynamic_cert|d('N/A') }}</li>
                             <li>兼容性：{{ masterpiece.compatibility|join(' ') if 'compatibility' in masterpiece else 'N/A' }}</li>
                             <li>标签：{{ masterpiece.tags|join(' ') if 'tags' in masterpiece and masterpiece.tags else 'N/A' }}</li>
+                            {% if masterpiece.ref %}<li>引用：<a href="{{ masterpiece.ref }}" target="_blank">{{ masterpiece.ref }}</a></li>{% endif %}
                         </ul>
                     </div>
 
@@ -73,13 +75,10 @@
             </div>
             <div class="row">
                     <hr />
-                    <div class="col-md-2">
-                        <a class="btn btn-success" href="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">修改</a>
-                    </div>
-                    <div class="col-md-2">
-                        <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>
-                    </div>
-                    <div class="col-md-2">
+                    <div class="col-md-12">
+                        <a class="btn btn-success" href="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">修改</a>&emsp;
+                        <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>&emsp;
+                        <a class="btn btn-primary" href="{{ url_for('home.add_masterpiece', copy=masterpiece._id) }}">复制</a>&emsp;
                         <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>
                     </div>
                 </div>
