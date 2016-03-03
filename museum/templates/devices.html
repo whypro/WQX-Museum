@@ -1,0 +1,36 @@
+{% extends '_base.html' %}
+{% block title %}机型管理{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>所有机型</h3>
+                    </div>
+                    <hr>
+                </div>
+
+                {% for device in devices %}
+                <div class="col-md-3 col-sm-6 col-xs-12">
+                    <div class="thumbnail">
+                        <a href="{{ url_for('home.show_device_detail', oid=device._id) }}">
+                            <img alt="{{ device.model }}" src="{{ url_for('home.preview_device', oid=device._id) }}" class="img-responsive" style="height: 200px; display: block;"/>
+                        </a>
+                        <div class="caption">
+                            <h4 class="text-center">{{ device.brand~' '~device.model }}</h4>
+                            <p>
+                                {% set score = device.marking.score|int if 'marking' in device and 'score' in device.marking and device.marking.score else None %}
+                                <small>评分：
+                                    {%- if score == None %}N/A{% else %}
+                                    {%- for i in range(score) %}★{% endfor -%}
+                                    {%- for i in range(5-score) %}☆{% endfor -%}
+                                    {% endif -%}
+                                </small>
+                                <br>
+                            </p>
+                            <p>{{ device.description|d('') }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+{% endblock %}

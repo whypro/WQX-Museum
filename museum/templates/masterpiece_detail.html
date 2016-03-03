@@ -56,7 +56,7 @@
                     <div class="row">
                         {% for screenshot in masterpiece.screenshots %}
                         <div class="thumbnail col-md-2 col-sm-4 col-xs-12">
-                            <a href="{{ url_for('static', filename='masterpieces/'+masterpiece.type+'/'+masterpiece.title+'/'+screenshot) }}"><img src="{{ url_for('home.screenshot', oid=masterpiece._id, idx=loop.index0) }}" alt="{{ masterpiece.title }}" class="img-responsive" /></a>
+                            <a href="{{ url_for('home.screenshot', oid=masterpiece._id, idx=loop.index0) }}"><img src="{{ url_for('home.screenshot', oid=masterpiece._id, idx=loop.index0) }}" class="img-responsive" /></a>
                         </div>
                         {% endfor %}
                     </div>

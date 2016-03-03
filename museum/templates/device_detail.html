@@ -1,0 +1,71 @@
+{% extends '_base.html' %}
+{% block title %}{{ device.brand~' '~device.model }}{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>{{ device.brand~' '~device.model }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>硬件信息</h4>
+                    <div class="row">
+                        <ul>
+                            <li>品牌：{{ device.brand|d('未知') }}</li>
+                            <li>型号：{{ device.model|d('未知') }}</li>
+                            {% set score = masterpiece.marking.score|int if 'marking' in masterpiece and 'score' in masterpiece.marking and masterpiece.marking.score else None %}
+                            <li>评分：
+                            {%- if score == None %}N/A{% else %}
+                            {%- for i in range(score) %}★{% endfor -%}
+                            {%- for i in range(5-score) %}☆{% endfor -%}
+                            {% endif -%}
+                            </li>
+
+                            <li>重量：{{ device.weight|d('未知') }} g</li>
+
+                            <li>三维：{{ device.dimension|join('*') }} mm</li>
+                        </ul>
+                    </div>
+
+                    {% if 'pictures' in device and device.pictures %}
+                    <h4>实物图片</h4>
+                    <div class="row">
+                        {% for picture in device.pictures %}
+                        <div class="thumbnail col-md-2 col-sm-4 col-xs-12">
+                            <a href="{{ url_for('home.device_picture', oid=device._id, idx=loop.index0) }}"><img src="{{ url_for('home.device_picture', oid=device._id, idx=loop.index0) }}" class="img-responsive" /></a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                    <hr>
+{#                    <div class="col-md-12">#}
+{#                        <a class="btn btn-success" href="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">修改</a>&emsp;#}
+{#                        <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>&emsp;#}
+{#                        <a class="btn btn-primary" href="{{ url_for('home.add_masterpiece', copy=masterpiece._id) }}">复制</a>&emsp;#}
+{#                        <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>#}
+{#                    </div>#}
+                </div>
+            </div>
+            {#
+            <div class="row">
+                    <hr />
+                    <div class="col-md-2">
+                        <a class="btn btn-default">评分</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-default">修改兼容性</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a class="btn btn-default">增加简介</a>
+                    </div>
+                </div>
+            </div>
+            #}
+{% endblock %}
+

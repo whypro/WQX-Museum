@@ -150,8 +150,9 @@ def add_masterpiece():
         if dynamic_cert:
             data['dynamic_cert'] = dynamic_cert
         compatibility = request.form.getlist('compatibility')
+        compatibility = filter(lambda x: x, compatibility)
         if compatibility:
-            data['compatibility'] = filter(lambda x: x, compatibility)
+            data['compatibility'] = compatibility
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
@@ -213,8 +214,9 @@ def edit_masterpiece(oid):
         if dynamic_cert:
             data['dynamic_cert'] = dynamic_cert
         compatibility = request.form.getlist('compatibility')
+        compatibility = filter(lambda x: x, compatibility)
         if compatibility:
-            data['compatibility'] = filter(lambda x: x, compatibility)
+            data['compatibility'] = compatibility
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
@@ -313,8 +315,9 @@ def add_author():
         if name:
             data['name'] = name
         other_names = request.form.getlist('other-names')
+        other_names = filter(lambda x: x, other_names)
         if other_names:
-            data['other_names'] = filter(lambda x: x, other_names)
+            data['other_names'] = other_names
         email = request.form.get('email')
         if email:
             data['email'] = email
@@ -400,3 +403,46 @@ def edit_author(oid):
     return render_template('author_edit.html', author=author, old_author=old_author)
 
 
+@home.route('/device/')
+def show_devices():
+    devices = mongo.db.devices.find()
+    return render_template('devices.html', devices=devices)
+
+
+@home.route('/device/<oid>/')
+def show_device_detail(oid):
+    device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+    if not device:
+        abort(404)
+    return render_template('device_detail.html', device=device)
+
+
+@home.route('/device/<oid>/preview/')
+def preview_device(oid):
+    device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+    if not device:
+        abort(404)
+
+    if 'pictures' in device and device['pictures']:
+        filename = device['pictures'][0]
+        path = os.path.join('devices', device['brand'], device['model'], filename)
+        return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    else:
+        path = os.path.join(current_app.static_folder, 'default.bmp')
+        return send_file(path)
+
+
+@home.route('/device/<oid>/picture/<int:idx>/')
+def device_picture(oid, idx):
+    device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+    if not device:
+        abort(404)
+
+    if 'pictures' in device and idx <= len(device['pictures']):
+        filename = device['pictures'][idx]
+    else:
+        abort(404)
+
+    path = os.path.join('devices', device['brand'], device['model'], filename)
+    return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path)
