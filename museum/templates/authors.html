@@ -26,7 +26,7 @@
 {#                                {% else %}#}
 {#                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author.obj._id, offset=loop.index0) }}">修改</a>#}
 {#                                {% endif %}#}
-                                <a class="btn btn-success btn-xs" href="{{ url_for('home.edit_author', oid=author._id) }}">修改</a>
+                                <a class="btn btn-success btn-xs" href="{{ url_for('author.edit_author', oid=author._id) }}">修改</a>
                             </td>
                         </tr>
                         {% endfor %}

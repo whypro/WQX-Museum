@@ -11,7 +11,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <form class="form-horizontal" method="post" action="{{ url_for('home.edit_author', oid=author._id) }}">
+                    <form class="form-horizontal" method="post" action="{{ url_for('author.edit_author', oid=author._id) }}">
 
                         <div class="form-group">
                             <label for="name-input" class="col-sm-2 control-label">用户名</label>
@@ -87,7 +87,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button type="submit" class="btn btn-success">保存</button>&emsp;
-                                <a class="btn btn-default" href="{{ url_for('home.show_authors') }}">取消</a>
+                                <a class="btn btn-default" href="{{ url_for('author.show_authors') }}">取消</a>
                             </div>
                         </div>
 

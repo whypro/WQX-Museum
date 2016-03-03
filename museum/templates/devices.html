@@ -12,8 +12,8 @@
                 {% for device in devices %}
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
-                        <a href="{{ url_for('home.show_device_detail', oid=device._id) }}">
-                            <img alt="{{ device.model }}" src="{{ url_for('home.preview_device', oid=device._id) }}" class="img-responsive" style="height: 200px; display: block;"/>
+                        <a href="{{ url_for('device.show_device_detail', oid=device._id) }}">
+                            <img alt="{{ device.model }}" src="{{ url_for('device.get_device_preview', oid=device._id) }}" class="img-responsive" style="height: 200px; display: block;"/>
                         </a>
                         <div class="caption">
                             <h4 class="text-center">{{ device.brand~' '~device.model }}</h4>

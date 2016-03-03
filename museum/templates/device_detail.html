@@ -35,7 +35,7 @@
                     <div class="row">
                         {% for picture in device.pictures %}
                         <div class="thumbnail col-md-2 col-sm-4 col-xs-12">
-                            <a href="{{ url_for('home.device_picture', oid=device._id, idx=loop.index0) }}"><img src="{{ url_for('home.device_picture', oid=device._id, idx=loop.index0) }}" class="img-responsive" /></a>
+                            <a href="{{ url_for('device.get_device_picture', oid=device._id, idx=loop.index0) }}"><img src="{{ url_for('device.get_device_picture', oid=device._id, idx=loop.index0) }}" class="img-responsive" /></a>
                         </div>
                         {% endfor %}
                     </div>

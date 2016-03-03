@@ -56,7 +56,7 @@
                     <div class="row">
                         {% for screenshot in masterpiece.screenshots %}
                         <div class="thumbnail col-md-2 col-sm-4 col-xs-12">
-                            <a href="{{ url_for('home.screenshot', oid=masterpiece._id, idx=loop.index0) }}"><img src="{{ url_for('home.screenshot', oid=masterpiece._id, idx=loop.index0) }}" class="img-responsive" /></a>
+                            <a href="{{ url_for('masterpiece.get_masterpiece_screenshot', oid=masterpiece._id, idx=loop.index0) }}"><img src="{{ url_for('masterpiece.get_masterpiece_screenshot', oid=masterpiece._id, idx=loop.index0) }}" class="img-responsive" /></a>
                         </div>
                         {% endfor %}
                     </div>
@@ -66,7 +66,7 @@
                     <div class="row">
                         <ul>
                             {% for file in masterpiece.files %}
-                            <li><a href="{{ url_for('home.download', oid=masterpiece._id, filename=file) }}">{{ file }}</a></li>
+                            <li><a href="{{ url_for('masterpiece.get_masterpiece_file', oid=masterpiece._id, filename=file) }}">{{ file }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -76,10 +76,10 @@
             <div class="row">
                     <hr />
                     <div class="col-md-12">
-                        <a class="btn btn-success" href="{{ url_for('home.edit_masterpiece', oid=masterpiece._id) }}">修改</a>&emsp;
-                        <a class="btn btn-warning" href="{{ url_for('home.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>&emsp;
-                        <a class="btn btn-primary" href="{{ url_for('home.add_masterpiece', copy=masterpiece._id) }}">复制</a>&emsp;
-                        <a class="btn btn-danger" href="{{ url_for('home.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>
+                        <a class="btn btn-success" href="{{ url_for('masterpiece.edit_masterpiece', oid=masterpiece._id) }}">修改</a>&emsp;
+                        <a class="btn btn-warning" href="{{ url_for('masterpiece.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>&emsp;
+                        <a class="btn btn-primary" href="{{ url_for('masterpiece.add_masterpiece', copy=masterpiece._id) }}">复制</a>&emsp;
+                        <a class="btn btn-danger" href="{{ url_for('masterpiece.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>
                     </div>
                 </div>
             </div>

@@ -15,12 +15,12 @@
                     {% else %}
                     {% set args = '' %}
                     {% endif %}
-                    <a class="label label-success" href="{{ url_for('home.show_masterpieces')+args }}">{{ tag }}</a>
+                    <a class="label label-success" href="{{ url_for('masterpiece.show_masterpieces')+args }}">{{ tag }}</a>
                     {% endfor %}
 
                     {% for tag in all_tags %}
                     {% if tag not in current_tags %}
-                    <a class="label label-default" href="{{ url_for('home.show_masterpieces')+'?tags='+(current_tags+[tag])|join(',') }}">{{ tag }}</a>
+                    <a class="label label-default" href="{{ url_for('masterpiece.show_masterpieces')+'?tags='+(current_tags+[tag])|join(',') }}">{{ tag }}</a>
                     {% endif %}
                     {% endfor %}
 
@@ -30,8 +30,8 @@
                 {% for masterpiece in masterpieces %}
                 <div class="col-md-3 col-sm-6 col-xs-12">
                     <div class="thumbnail">
-                        <a href="{{ url_for('home.show_masterpiece_detail', oid=masterpiece._id) }}">
-                            <img alt="{{ masterpiece.title }}" src="{{ url_for('home.preview', oid=masterpiece._id) }}" class="img-responsive" style="height: 80px; display: block;"/>
+                        <a href="{{ url_for('masterpiece.show_masterpiece_detail', oid=masterpiece._id) }}">
+                            <img alt="{{ masterpiece.title }}" src="{{ url_for('masterpiece.get_masterpiece_preview', oid=masterpiece._id) }}" class="img-responsive" style="height: 80px; display: block;"/>
                         </a>
                         <div class="caption">
                             <h4 class="text-center">{{ masterpiece.title|truncate(14, True) }}<small>&emsp;{{ masterpiece.version|d('') }}</small></h4>
