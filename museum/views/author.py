@@ -111,3 +111,16 @@ def edit_author(oid):
         old_author = dict()
 
     return render_template('author_edit.html', author=author, old_author=old_author)
+
+
+@bp_author.route('/<oid>/')
+def show_author_detail(oid):
+    author = mongo.db.authors.find_one({'_id': ObjectId(oid)})
+    if not author:
+        abort(404)
+
+    masterpieces = mongo.db.masterpieces.find({'author_oid': ObjectId(oid)})
+    author['masterpieces'] = masterpieces
+    # print author['masterpieces']
+    return render_template('author_detail.html', author=author)
+

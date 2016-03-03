@@ -58,3 +58,28 @@ def get_device_picture(oid, idx):
     path = os.path.join('devices', device['brand'], device['model'], filename)
     return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
     # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path)
+
+
+def _get_device_dirname(device):
+    return os.path.abspath(os.path.join(current_app.config['ASSETS_DIR'], 'devices', device['brand'], device['model']))
+
+
+@bp_device.route('/<oid>/update/')
+def update_device_pictures(oid):
+    device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+    if not device:
+        abort(404)
+
+    pictures = []
+
+    for filename in os.listdir(_get_device_dirname(device)):
+        ext = os.path.splitext(filename)[-1].lower()
+        if ext in ['.bmp', '.jpg', '.png', '.gif']:
+            pictures.append(filename)
+        else:
+            continue
+
+    print pictures
+
+    mongo.db.devices.update_one({'_id': ObjectId(oid)}, {'$set': {'pictures': pictures}})
+    return redirect(url_for('device.show_device_detail', oid=oid))

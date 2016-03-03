@@ -235,7 +235,7 @@ def edit_masterpiece(oid):
 
 
 def _get_masterpiece_dirname(masterpiece):
-    return os.path.abspath(os.path.join('museum\\static', 'masterpieces', masterpiece['type'], masterpiece['title']))
+    return os.path.abspath(os.path.join(current_app.config['ASSETS_DIR'], 'masterpieces', masterpiece['type'], masterpiece['title']))
 
 
 @bp_masterpiece.route('/<oid>/delete/')
@@ -250,9 +250,9 @@ def get_masterpiece_file(oid, filename):
     masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
     if not masterpiece:
         abort(404)
-    path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
-    # print current_app.config['ASSETS_DIR'], path
-    return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+
+    path = os.path.join(_get_masterpiece_dirname(masterpiece), filename)
+    return send_file(path)
     # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path, as_attachment=True)
 
 
@@ -267,8 +267,8 @@ def get_masterpiece_screenshot(oid, idx):
     else:
         abort(404)
 
-    path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
-    return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+    path = os.path.join(_get_masterpiece_dirname(masterpiece), filename)
+    return send_file(path)
     # return send_from_directory(current_app.config['ASSETS_DIR'], filename=path)
 
 
@@ -280,8 +280,8 @@ def get_masterpiece_preview(oid):
 
     if 'screenshots' in masterpiece and masterpiece['screenshots']:
         filename = masterpiece['screenshots'][0]
-        path = os.path.join('masterpieces', masterpiece['type'], masterpiece['title'], filename)
-        return send_file(os.path.join(current_app.config['ASSETS_DIR'], path))
+        path = os.path.join(_get_masterpiece_dirname(masterpiece), filename)
+        return send_file(path)
     else:
         path = os.path.join(current_app.static_folder, 'default.bmp')
         return send_file(path)

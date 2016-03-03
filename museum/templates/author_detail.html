@@ -1,0 +1,58 @@
+{% extends '_base.html' %}
+{% block title %}{{ author.name }}{% endblock %}
+{% block content %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h3>{{ author.name }}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h4>个人信息</h4>
+                    <div class="row">
+                        <ul>
+                            <li>用户名：{{ author.name|d('') }}</li>
+                            <li>邮箱：{{ author.email|d('') }}</li>
+                            <li>QQ：{{ author.qq|d('') }}</li>
+                            <li>姓名：{{ author.realname|d('') }}</li>
+                            <li>网站：{{ author.site|d('') }}</li>
+                            <li>地址：{{ author.address|d('') }}</li>
+                            <li>邮编：{{ author.zip|d('') }}</li>
+                        </ul>
+                    </div>
+
+                    <h4>作品列表</h4>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-hover">
+                                {% for masterpiece in author.masterpieces %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td><a href="{{ url_for('masterpiece.show_masterpiece_detail', oid=masterpiece._id) }}">{{ masterpiece.title }}</a></td>
+                                    <td>{{ masterpiece.subtitle }}</td>
+                                    <td>{{ masterpiece.version }}</td>
+                                    <td>{{ masterpiece.type }}</td>
+                                    <td>{{ masterpiece.date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>  
+                    </div>
+                </div>
+            </div>
+            {# <div class="row">
+                    <hr>
+                    <div class="col-md-12">
+                        <a class="btn btn-success" href="{{ url_for('masterpiece.edit_masterpiece', oid=masterpiece._id) }}">修改</a>&emsp;
+                        <a class="btn btn-warning" href="{{ url_for('masterpiece.update_masterpieces_screenshots_and_files', oid=masterpiece._id) }}">更新截图和文件</a>&emsp;
+                        <a class="btn btn-primary" href="{{ url_for('masterpiece.add_masterpiece', copy=masterpiece._id) }}">复制</a>&emsp;
+                        <a class="btn btn-danger" href="{{ url_for('masterpiece.delete_masterpiece', oid=masterpiece._id) }}" onclick="return confirm('删除将不可恢复。确定删除吗？');">删除</a>
+                    </div>
+                </div>
+            </div> #}
+           
+{% endblock %}
+
