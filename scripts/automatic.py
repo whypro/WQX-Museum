@@ -7,6 +7,9 @@ from collections import OrderedDict
 from pymongo import MongoClient
 
 
+"""Automatic import masterpiece info from *.yml to MongoDB."""
+
+
 def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
     class OrderedLoader(Loader):
         pass
