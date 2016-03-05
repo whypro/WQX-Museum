@@ -8,6 +8,7 @@ from flask import Blueprint, render_template, redirect, url_for, abort, request
 from flask import current_app, send_from_directory, send_file
 import pymongo
 
+
 from ..extensions import mongo
 from ..helpers import get_client_ip, get_user_agent
 
@@ -83,3 +84,84 @@ def update_device_pictures(oid):
 
     mongo.db.devices.update_one({'_id': ObjectId(oid)}, {'$set': {'pictures': pictures}})
     return redirect(url_for('device.show_device_detail', oid=oid))
+
+
+@bp_device.route('/add/', methods=['GET', 'POST'])
+def add_device():
+    if request.method == 'POST':
+        brand = request.form.get('brand')
+        model = request.form.get('model')
+        if not brand or not model:
+            return redirect(url_for('device.add_device'))
+        data = dict(brand=brand, model=model)
+        alias = request.form.get('alias')
+        if alias:
+            data['alias'] = alias
+        dimension = request.form.getlist('dimension')
+        dimension = filter(lambda x: x, dimension)
+        if dimension:
+            data['dimension'] = map(lambda x: float(x), dimension)
+        weight = request.form.get('weight')
+        if weight:
+            data['weight'] = float(weight)
+        print data
+
+        result = mongo.db.devices.insert_one(data)
+        print result.inserted_id
+        device = mongo.db.devices.find_one({'_id': ObjectId(result.inserted_id)})
+        os.makedirs(_get_device_dirname(device))
+
+        return redirect(url_for('device.show_device_detail', oid=result.inserted_id))
+
+    copy_oid = request.args.get('copy')
+    if copy_oid:
+        copy_device = mongo.db.devices.find_one({'_id': ObjectId(copy_oid)})
+        if not copy_device:
+            abort(400)
+    else:
+        copy_device = dict()
+
+    return render_template('device_add.html', device=copy_device)
+
+
+@bp_device.route('/<oid>/edit/', methods=['GET', 'POST'])
+def edit_device(oid):
+    device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+    if not device:
+        abort(404)
+
+    if request.method == 'POST':
+        brand = request.form.get('brand')
+        model = request.form.get('model')
+        if not brand or not model:
+            return redirect(url_for('device.edit_device'))
+        data = dict(brand=brand, model=model)
+        alias = request.form.get('alias')
+        if alias:
+            data['alias'] = alias
+        dimension = request.form.getlist('dimension')
+        dimension = filter(lambda x: x, dimension)
+        if dimension:
+            data['dimension'] = map(lambda x: float(x), dimension)
+        weight = request.form.get('weight')
+        if weight:
+            data['weight'] = float(weight)
+        print data
+
+        mongo.db.devices.update_one({'_id': ObjectId(oid)}, {'$set': data})
+        new_device = mongo.db.devices.find_one({'_id': ObjectId(oid)})
+
+        old_dirname, new_dirname = _get_device_dirname(device), _get_device_dirname(new_device)
+        if new_dirname != old_dirname:
+            os.renames(old_dirname, new_dirname)
+
+        return redirect(url_for('device.show_device_detail', oid=oid))
+
+    return render_template('device_edit.html', device=device)
+
+
+@bp_device.route('/<oid>/delete/')
+def delete_device(oid):
+    device = mongo.db.devices.find_one_and_delete({'_id': ObjectId(oid)})
+    os.removedirs(_get_device_dirname(device))
+    return redirect(url_for('device.show_devices'))

@@ -115,7 +115,7 @@ def add_masterpiece():
     if request.method == 'POST':
         title = request.form.get('title')
         type_ = request.form.get('type')
-        if not title or not type_ or type_ == 'None':
+        if not title or not type_:
             return redirect(url_for('masterpiece.add_masterpiece'))
         data = dict(title=title, type=type_)
         subtitle = request.form.get('subtitle')
@@ -128,13 +128,13 @@ def add_masterpiece():
         if date:
             data['date'] = date
         author_oid = request.form.get('author-oid')
-        if author_oid and author_oid != 'None':
+        if author_oid:
             data['author_oid'] = ObjectId(author_oid)
         studio_oid = request.form.get('studio-oid')
-        if studio_oid and studio_oid != 'None':
+        if studio_oid:
             data['studio_oid'] = ObjectId(studio_oid)
         score = request.form.get('score')
-        if score and score != 'None':
+        if score:
             if not score.isdigit():
                 abort(400)
             data.setdefault('marking', dict())
@@ -149,6 +149,10 @@ def add_masterpiece():
         compatibility = filter(lambda x: x, compatibility)
         if compatibility:
             data['compatibility'] = compatibility
+        device_oids = request.form.getlist('device_oids')
+        device_oids = filter(lambda x: x, device_oids)
+        if device_oids:
+            data['device_oids'] = map(lambda x: ObjectId(x), device_oids)
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
@@ -173,15 +177,24 @@ def add_masterpiece():
         copy_masterpiece = dict()
     authors = mongo.db.authors.find().sort([('name', pymongo.ASCENDING)])
     studios = mongo.db.studios.find()
+    devices = mongo.db.devices.find()
     tags = mongo.db.masterpieces.distinct('tags')
     types = mongo.db.masterpieces.distinct('type')
-    return render_template('masterpiece_add.html', masterpiece=_new_masterpiece(copy_masterpiece), authors=authors, studios=studios, tags=tags, types=types)
+    return render_template('masterpiece_add.html', masterpiece=_new_masterpiece(copy_masterpiece), authors=authors, studios=studios, devices=devices, tags=tags, types=types)
 
 
 @bp_masterpiece.route('/<oid>/edit/', methods=['GET', 'POST'])
 def edit_masterpiece(oid):
+    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+    if not masterpiece:
+        abort(404)
+
     if request.method == 'POST':
-        data = dict()
+        title = request.form.get('title')
+        type_ = request.form.get('type')
+        if not title or not type_:
+            return redirect(url_for('masterpiece.edit_masterpiece'))
+        data = dict(title=title, type=type_)
         subtitle = request.form.get('subtitle')
         if subtitle:
             data['subtitle'] = subtitle
@@ -192,13 +205,13 @@ def edit_masterpiece(oid):
         if date:
             data['date'] = date
         author_oid = request.form.get('author-oid')
-        if author_oid and author_oid != 'None':
+        if author_oid:
             data['author_oid'] = ObjectId(author_oid)
         studio_oid = request.form.get('studio-oid')
-        if studio_oid and studio_oid != 'None':
+        if studio_oid:
             data['studio_oid'] = ObjectId(studio_oid)
         score = request.form.get('score')
-        if score and score != 'None':
+        if score:
             if not score.isdigit():
                 abort(400)
             data.setdefault('marking', dict())
@@ -213,6 +226,11 @@ def edit_masterpiece(oid):
         compatibility = filter(lambda x: x, compatibility)
         if compatibility:
             data['compatibility'] = compatibility
+        device_oids = request.form.getlist('device-oids')
+        print device_oids
+        device_oids = filter(lambda x: x, device_oids)
+        if device_oids:
+            data['device_oids'] = map(lambda x: ObjectId(x), device_oids)
         tags = request.form.getlist('tags')
         if tags:
             data['tags'] = tags
@@ -222,16 +240,20 @@ def edit_masterpiece(oid):
         print data
 
         mongo.db.masterpieces.update_one({'_id': ObjectId(oid)}, {'$set': data})
+        new_masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
+
+        old_dirname, new_dirname = _get_masterpiece_dirname(masterpiece), _get_masterpiece_dirname(new_masterpiece)
+        if new_dirname != old_dirname:
+            os.renames(old_dirname, new_dirname)
+
         return redirect(url_for('masterpiece.show_masterpiece_detail', oid=oid))
 
-    masterpiece = mongo.db.masterpieces.find_one({'_id': ObjectId(oid)})
-    if not masterpiece:
-        abort(404)
     authors = mongo.db.authors.find().sort([('name', pymongo.ASCENDING)])
     studios = mongo.db.studios.find()
+    devices = mongo.db.devices.find()
     tags = mongo.db.masterpieces.distinct('tags')
     types = mongo.db.masterpieces.distinct('type')
-    return render_template('masterpiece_edit.html', masterpiece=_new_masterpiece(masterpiece), authors=authors, studios=studios, tags=tags, types=types)
+    return render_template('masterpiece_edit.html', masterpiece=_new_masterpiece(masterpiece), authors=authors, studios=studios, devices=devices, tags=tags, types=types)
 
 
 def _get_masterpiece_dirname(masterpiece):
@@ -242,7 +264,7 @@ def _get_masterpiece_dirname(masterpiece):
 def delete_masterpiece(oid):
     masterpiece = mongo.db.masterpieces.find_one_and_delete({'_id': ObjectId(oid)})
     os.removedirs(_get_masterpiece_dirname(masterpiece))
-    return redirect(url_for('masterpiece.index'))
+    return redirect(url_for('masterpiece.show_masterpieces'))
 
 
 @bp_masterpiece.route('/<oid>/download/<filename>')

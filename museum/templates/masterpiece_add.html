@@ -11,7 +11,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <form class="form-horizontal" method="post" action="{{ url_for('home.add_masterpiece') }}">
+                    <form class="form-horizontal" method="post" action="{{ url_for('masterpiece.add_masterpiece') }}">
 
                         <div class="form-group">
                             <label for="title-input" class="col-sm-2 control-label">标题</label>
@@ -45,7 +45,7 @@
                             <label for="author-id-select" class="col-sm-2 control-label">作者</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="author-oid" id="author-id-select">
-                                    <option value="None">请选择作者</option>
+                                    <option value="">请选择作者</option>
                                     {% for author in authors %}
                                     <option value="{{ author._id }}"{% if masterpiece.author_oid == author._id %} selected="selected"{% endif %}>{{ author.name|d('无') }} , {{ author.email|d('无') }}, {{ author.realname|d('无') }}</option>
                                     {% endfor %}
@@ -57,7 +57,7 @@
                             <label for="studio-id-select" class="col-sm-2 control-label">工作室</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="studio-oid" id="studio-id-select">
-                                    <option value="None">请选择工作室</option>
+                                    <option value="">请选择工作室</option>
                                     {% for studio in studios %}
                                     <option value="{{ studio._id }}"{% if masterpiece.studio_oid == studio._id %} selected="selected"{% endif %}>{{ studio.name }}</option>
                                     {% endfor %}
@@ -122,13 +122,34 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="compatibility-input" class="col-sm-2 control-label">兼容机型</label>
+                            <label for="device-ids-select" class="col-sm-2 control-label">兼容机型</label>
                             <div class="col-sm-10">
-                                {% for model in masterpiece.compatibility %}
-                                <input type="text" class="form-control" name="compatibility" id="compatibility-input" value="{{ model }}">
+                                {% for device_oid in masterpiece.device_oids %}
+                                <select class="form-control" name="device-oids" id="device-ids-select">
+                                    <option value="">请选择机型</option>
+                                    {% for device in devices %}
+                                    <option value="{{ device._id }}"{% if device_oid == device._id %} selected="selected"{% endif %}>{{ device.brand|d('无') }} {{ device.model|d('无') }}</option>
+                                    {% endfor %}
+                                </select>
                                 <br>
                                 {% endfor %}
-                                <input type="text" class="form-control" name="compatibility" id="compatibility-input">
+                                <select class="form-control" name="device-oids" id="device-ids-select">
+                                    <option value="">请选择机型</option>
+                                    {% for device in devices.rewind() %}
+                                    <option value="{{ device._id }}"{% if device_oid == device._id %} selected="selected"{% endif %}>{{ device.brand|d('无') }} {{ device.model|d('无') }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">兼容机型</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static">
+                                    {% for model in masterpiece.compatibility %}
+                                    {{ model }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
                             </div>
                         </div>
 
@@ -162,7 +183,7 @@
                             <label for="tags-select" class="col-sm-2 control-label">标签</label>
                             <div class="col-sm-10">
                                 <select class="form-control" id="tags-select" multiple>
-                                    <option>请选择标签</option>
+                                    <option value="">请选择标签</option>
                                     {% for tag in tags %}
                                     <option value="{{ tag }}">{{ tag }}</option>
                                     {% endfor %}
@@ -170,8 +191,6 @@
                             </div>
                         </div>
                         #}
-
-
                     </form>
                 </div>
             </div>
