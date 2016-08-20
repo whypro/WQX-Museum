@@ -23,10 +23,9 @@
                             {%- for i in range(5-score) %}☆{% endfor -%}
                             {% endif -%}
                             </li>
-
-                            <li>重量：{{ device.weight|d('未知') }} g</li>
-
-                            <li>三维：{{ device.dimension|join('*') }} mm</li>
+                            <li>三维：{{ device.dimension|join('*') if device.dimension else '未知' }} mm</li>
+                            {% if device.weight %}<li>重量：{{ device.weight['net_weight']|d('未知') }} g, {{ device.weight['with_battery_weight']|d('未知') }} g（含电池）</li>{% endif %}
+                            <li>电池：{{ device.battery|d('未知') }}</li>
                         </ul>
                     </div>
 

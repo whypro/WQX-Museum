@@ -46,9 +46,37 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="weight-input" class="col-sm-2 control-label">重量</label>
+                            <label for="net-weight-input" class="col-sm-2 control-label">重量（不含电池）</label>
                             <div class="col-sm-10">
-                                <input type="text" name="weight" class="form-control" id="weight-input" value="{{ device.weight }}">
+                                <input type="text" name="net-weight" class="form-control" id="net-weight-input" value="{{ device.weight.net_weight if device.weight }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="with-battery-weight-input" class="col-sm-2 control-label">重量（含电池）</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="with-battery-weight" class="form-control" id="with-battery-weight-input" value="{{ device.weight.with_battery_weight if device.weight }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="battery-input" class="col-sm-2 control-label">电池类型</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="battery" class="form-control" id="battery-input" value="{{ device.battery }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="screen-x-input" class="col-sm-2 control-label">屏幕水平像素数</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="screen" class="form-control" id="screen-x-input" value="{{ device.screen[0] if device.screen }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="screen-y-input" class="col-sm-2 control-label">屏幕水平像素数</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="screen" class="form-control" id="screen-y-input" value="{{ device.screen[1] if device.screen }}">
                             </div>
                         </div>
 

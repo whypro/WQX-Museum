@@ -17,6 +17,6 @@ def show_about_me():
     return render_template('about_me.html')
 
 
-@bp_home.route('/recovery/')
+@bp_home.route('/recycling/')
 def show_recovery():
-    return render_template('recovery.html')
+    return render_template('recycling.html')

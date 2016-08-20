@@ -101,9 +101,21 @@ def add_device():
         dimension = filter(lambda x: x, dimension)
         if dimension:
             data['dimension'] = map(lambda x: float(x), dimension)
-        weight = request.form.get('weight')
-        if weight:
-            data['weight'] = float(weight)
+        net_weight = request.form.get('net-weight')
+        if net_weight:
+            data.setdefault('weight', dict())
+            data['weight']['net_weight'] = float(net_weight)
+        with_battery_weight = request.form.get('with-battery-weight')
+        if with_battery_weight:
+            data.setdefault('weight', dict())
+            data['weight']['with_battery_weight'] = float(with_battery_weight)
+        screen = request.form.getlist('screen')
+        screen = filter(lambda x: x, screen)
+        if len(screen) == 2:
+            data['screen'] = map(lambda x: int(x), screen)
+        battery = request.form.get('battery')
+        if battery:
+            data['battery'] = battery
         print data
 
         result = mongo.db.devices.insert_one(data)
@@ -141,11 +153,23 @@ def edit_device(oid):
             data['alias'] = alias
         dimension = request.form.getlist('dimension')
         dimension = filter(lambda x: x, dimension)
-        if dimension:
+        if len(dimension) == 3:
             data['dimension'] = map(lambda x: float(x), dimension)
-        weight = request.form.get('weight')
-        if weight:
-            data['weight'] = float(weight)
+        net_weight = request.form.get('net-weight')
+        if net_weight:
+            data.setdefault('weight', dict())
+            data['weight']['net_weight'] = float(net_weight)
+        with_battery_weight = request.form.get('with-battery-weight')
+        if with_battery_weight:
+            data.setdefault('weight', dict())
+            data['weight']['with_battery_weight'] = float(with_battery_weight)
+        screen = request.form.getlist('screen')
+        screen = filter(lambda x: x, screen)
+        if len(screen) == 2:
+            data['screen'] = map(lambda x: int(x), screen)
+        battery = request.form.get('battery')
+        if battery:
+            data['battery'] = battery
         print data
 
         mongo.db.devices.update_one({'_id': ObjectId(oid)}, {'$set': data})
