@@ -14,4 +14,4 @@ class Config(object):
     MONGO_PORT = 27017
     MONGO_DBNAME = 'wqx_museum'
 
-    ASSETS_DIR = r'E:\Codes\My Github\WQX-Museum\assets'
+    ASSETS_DIR = r'/home/whypro/assets/wqx'

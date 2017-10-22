@@ -46,7 +46,7 @@ def show_masterpieces():
     tags = request.args.get('tags')
     if tags:
         current_tags += tags.split(',')
-        print current_tags
+        print(current_tags)
         # 验证合法性
         for tag in current_tags:
             print tag, all_tags
